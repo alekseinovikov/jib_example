@@ -1,0 +1,50 @@
+plugins {
+    id 'org.springframework.boot' version '2.7.4'
+    id 'io.spring.dependency-management' version '1.0.14.RELEASE'
+    id 'java'
+    id 'com.google.cloud.tools.jib' version '3.3.0'
+}
+
+group = 'me.freedom4live'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+jib {
+    from {
+        image = 'openjdk:alpine'
+    }
+    to {
+        image = 'alekseinovikov/jib-example'
+        tags = ['0.1', 'latest']
+        auth {
+            username = 'username'
+            password = 'password'
+        }
+    }
+    container {
+        jvmFlags = ['-Xms128m']
+        ports = ['8080']
+        format = 'OCI'
+    }
+}
